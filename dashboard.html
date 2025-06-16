@@ -43,7 +43,8 @@
                         <span class="text-2xl font-bold text-red-500">PS</span>
                         <span class="ml-2 text-xl font-bold text-gray-800">PaisaStripes</span>
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-4" id="navLinks">
+                        <a href="dashboard.html" class="text-gray-600 hover:text-gray-800">Dashboard</a>
                         <a href="pages/challenges.html" class="text-gray-600 hover:text-gray-800">Challenges</a>
                         <a href="pages/community.html" class="text-gray-600 hover:text-gray-800">Community</a>
                         <a href="pages/profile.html" class="text-gray-600 hover:text-gray-800">Profile</a>
@@ -204,6 +205,16 @@
             localStorage.removeItem('betaUser');
             window.location.href = 'index.html';
         });
+
+        // Add admin dashboard link if admin
+        if (userData && userData.isAdmin) {
+            const navLinks = document.getElementById('navLinks');
+            const adminLink = document.createElement('a');
+            adminLink.href = 'pages/admin.html';
+            adminLink.className = 'text-gray-600 hover:text-gray-800';
+            adminLink.textContent = 'Admin';
+            navLinks.appendChild(adminLink);
+        }
     </script>
 </body>
 </html> 
