@@ -50,7 +50,10 @@
                         <div>
                             <span class="font-bold">${ch.title}</span> <span class="text-sm text-gray-500">(${ch.points} pts)</span>
                         </div>
-                        <button class="text-red-500 hover:underline" data-del="${idx}">Delete</button>
+                        <div>
+                            <button class="text-blue-500 hover:underline mr-2" data-edit="${idx}">Edit</button>
+                            <button class="text-red-500 hover:underline" data-del="${idx}">Delete</button>
+                        </div>
                     </div>
                     <div class="mb-2 text-gray-700">${ch.desc}</div>
                     <ul class="list-disc ml-6">
@@ -62,6 +65,25 @@
                     challenges.splice(idx, 1);
                     saveChallenges();
                     renderChallenges();
+                };
+                // Edit button
+                div.querySelector('[data-edit]').onclick = () => {
+                    // Load challenge data into form
+                    document.getElementById('challengeTitle').value = ch.title;
+                    document.getElementById('challengeDesc').value = ch.desc;
+                    document.getElementById('challengePoints').value = ch.points;
+                    const container = document.getElementById('tasksContainer');
+                    container.innerHTML = '';
+                    ch.tasks.forEach((task, i) => {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'task-input w-full px-4 py-2 border rounded-md';
+                        input.placeholder = `Task ${i + 1}`;
+                        input.value = task;
+                        container.appendChild(input);
+                    });
+                    // Set edit mode
+                    addChallengeForm.setAttribute('data-editing', idx);
                 };
                 list.appendChild(div);
             });
@@ -79,7 +101,7 @@
             container.appendChild(input);
         };
 
-        // Add new challenge
+        // Add new challenge or update existing
         document.getElementById('addChallengeForm').onsubmit = (e) => {
             e.preventDefault();
             const title = document.getElementById('challengeTitle').value;
@@ -87,7 +109,15 @@
             const points = parseInt(document.getElementById('challengePoints').value, 10);
             const tasks = Array.from(document.querySelectorAll('.task-input')).map(i => i.value).filter(Boolean);
             if (!title || !desc || !points || tasks.length === 0) return alert('Fill all fields and at least one task.');
-            challenges.push({ title, desc, points, tasks });
+            const editingIdx = addChallengeForm.getAttribute('data-editing');
+            if (editingIdx !== null) {
+                // Update existing
+                challenges[editingIdx] = { title, desc, points, tasks };
+                addChallengeForm.removeAttribute('data-editing');
+            } else {
+                // Add new
+                challenges.push({ title, desc, points, tasks });
+            }
             saveChallenges();
             renderChallenges();
             e.target.reset();
