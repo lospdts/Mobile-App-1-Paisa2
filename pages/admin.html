@@ -8,7 +8,6 @@
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen max-w-3xl mx-auto py-8">
-        <h1 class="text-3xl font-bold mb-6 text-center">Admin: Manage Weekly Challenges</h1>
         <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400">
             <h2 class="text-lg font-bold mb-2">Admin Tools (Debug)</h2>
             <div class="mb-2">
@@ -16,7 +15,9 @@
                 <pre id="betaUserDebug" class="bg-gray-100 p-2 rounded text-xs"></pre>
             </div>
             <button id="forceAdminLinkBtn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Force Show Admin Link</button>
+            <div id="adminWarning" class="mt-4 text-red-600 font-bold text-lg"></div>
         </div>
+        <h1 class="text-3xl font-bold mb-6 text-center">Admin: Manage Weekly Challenges</h1>
         <div id="adminContent" class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold mb-4">Add New Challenge</h2>
             <form id="addChallengeForm" class="mb-8 space-y-4">
@@ -201,7 +202,13 @@
 
         // Admin Tools Debug Panel
         function updateBetaUserDebug() {
-            document.getElementById('betaUserDebug').textContent = JSON.stringify(localStorage.getItem('betaUser') ? JSON.parse(localStorage.getItem('betaUser')) : null, null, 2);
+            const betaUser = localStorage.getItem('betaUser') ? JSON.parse(localStorage.getItem('betaUser')) : null;
+            document.getElementById('betaUserDebug').textContent = JSON.stringify(betaUser, null, 2);
+            if (!betaUser || !betaUser.isAdmin) {
+                document.getElementById('adminWarning').textContent = 'WARNING: You are NOT recognized as admin. Log in as admin@yourdomain.com.';
+            } else {
+                document.getElementById('adminWarning').textContent = '';
+            }
         }
         updateBetaUserDebug();
         document.getElementById('forceAdminLinkBtn').onclick = function() {
