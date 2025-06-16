@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaisaStripes - Daily Challenges</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <span class="text-2xl font-bold text-red-500">PS</span>
+                        <span class="ml-2 text-xl font-bold text-gray-800">PaisaStripes</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="../dashboard.html" class="text-gray-600 hover:text-gray-800">Dashboard</a>
+                        <a href="profile.html" class="text-gray-600 hover:text-gray-800">Profile</a>
+                        <button id="logoutBtn" class="text-red-500 hover:text-red-600">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto px-4 py-8">
+            <!-- Daily Challenges Section -->
+            <section class="mb-8">
+                <h1 class="text-3xl font-bold mb-6">Daily Challenges</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Challenge Card 1 -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-semibold">Complete Profile</h3>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">50 points</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Fill out your complete profile information to earn points.</p>
+                        <div class="progress-bar mb-2">
+                            <div class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
+                    </div>
+
+                    <!-- Challenge Card 2 -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-semibold">Community Engagement</h3>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">75 points</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Post 3 comments in the community feed.</p>
+                        <div class="progress-bar mb-2">
+                            <div class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
+                    </div>
+
+                    <!-- Challenge Card 3 -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-semibold">Feature Testing</h3>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">100 points</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">Test and provide feedback on 2 new features.</p>
+                        <div class="progress-bar mb-2">
+                            <div class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Rewards Section -->
+            <section>
+                <h2 class="text-2xl font-bold mb-6">Your Rewards</h2>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-xl font-semibold">Total Points</h3>
+                            <p class="text-3xl font-bold text-red-500" id="totalPoints">0</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold">Level</h3>
+                            <p class="text-3xl font-bold text-red-500" id="userLevel">1</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-semibold mb-2">Early Access</h4>
+                            <p class="text-sm text-gray-600 mb-2">Get early access to new features</p>
+                            <p class="text-red-500 font-semibold">500 points</p>
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-semibold mb-2">Premium Badge</h4>
+                            <p class="text-sm text-gray-600 mb-2">Exclusive premium user badge</p>
+                            <p class="text-red-500 font-semibold">1000 points</p>
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-semibold mb-2">Beta Tester Status</h4>
+                            <p class="text-sm text-gray-600 mb-2">Official beta tester status</p>
+                            <p class="text-red-500 font-semibold">2000 points</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const userData = JSON.parse(localStorage.getItem('betaUser'));
+        if (!userData) {
+            window.location.href = '../index.html';
+        }
+
+        // Initialize user progress
+        let userProgress = JSON.parse(localStorage.getItem('userProgress')) || {
+            points: 0,
+            level: 1,
+            challenges: {
+                'complete-profile': { progress: 0, completed: false },
+                'community-engagement': { progress: 0, completed: false },
+                'feature-testing': { progress: 0, completed: false }
+            }
+        };
+
+        // Update UI
+        document.getElementById('totalPoints').textContent = userProgress.points;
+        document.getElementById('userLevel').textContent = userProgress.level;
+
+        // Handle challenge buttons
+        document.querySelectorAll('.challenge-card button').forEach(button => {
+            button.addEventListener('click', () => {
+                const challengeId = button.closest('.challenge-card').dataset.challenge;
+                startChallenge(challengeId);
+            });
+        });
+
+        function startChallenge(challengeId) {
+            if (!userProgress.challenges[challengeId].completed) {
+                userProgress.challenges[challengeId].progress += 25;
+                if (userProgress.challenges[challengeId].progress >= 100) {
+                    userProgress.challenges[challengeId].completed = true;
+                    userProgress.points += 50;
+                    updateLevel();
+                }
+                localStorage.setItem('userProgress', JSON.stringify(userProgress));
+                updateUI();
+            }
+        }
+
+        function updateLevel() {
+            if (userProgress.points >= 2000) {
+                userProgress.level = 3;
+            } else if (userProgress.points >= 1000) {
+                userProgress.level = 2;
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('totalPoints').textContent = userProgress.points;
+            document.getElementById('userLevel').textContent = userProgress.level;
+            
+            // Update progress bars
+            Object.keys(userProgress.challenges).forEach(challengeId => {
+                const progress = userProgress.challenges[challengeId].progress;
+                const progressBar = document.querySelector(`[data-challenge="${challengeId}"] .progress-bar-fill`);
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                }
+            });
+        }
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('betaUser');
+            window.location.href = '../index.html';
+        });
+    </script>
+</body>
+</html> 
