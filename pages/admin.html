@@ -113,11 +113,11 @@
             if (editingIdx !== null) {
                 // Update existing
                 challenges[editingIdx] = { title, desc, points, tasks };
-                addChallengeForm.removeAttribute('data-editing');
             } else {
                 // Add new
                 challenges.push({ title, desc, points, tasks });
             }
+            addChallengeForm.removeAttribute('data-editing');
             saveChallenges();
             renderChallenges();
             e.target.reset();
