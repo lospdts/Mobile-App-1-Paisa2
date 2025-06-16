@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaisaStripes - Community</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .post-card {
+            transition: transform 0.2s;
+        }
+        .post-card:hover {
+            transform: translateY(-2px);
+        }
+        .like-button {
+            transition: all 0.2s;
+        }
+        .like-button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <span class="text-2xl font-bold text-red-500">PS</span>
+                        <span class="ml-2 text-xl font-bold text-gray-800">PaisaStripes</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="../dashboard.html" class="text-gray-600 hover:text-gray-800">Dashboard</a>
+                        <a href="challenges.html" class="text-gray-600 hover:text-gray-800">Challenges</a>
+                        <a href="profile.html" class="text-gray-600 hover:text-gray-800">Profile</a>
+                        <button id="logoutBtn" class="text-red-500 hover:text-red-600">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto px-4 py-8">
+            <!-- Community Stats -->
+            <section class="mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold mb-2">Total Posts</h3>
+                        <p class="text-3xl font-bold text-red-500" id="totalPosts">0</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold mb-2">Total Likes</h3>
+                        <p class="text-3xl font-bold text-red-500" id="totalLikes">0</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold mb-2">Active Users</h3>
+                        <p class="text-3xl font-bold text-red-500" id="activeUsers">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create Post -->
+            <section class="mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold mb-4">Create Post</h2>
+                    <form id="postForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Title</label>
+                            <input type="text" id="postTitle" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Content</label>
+                            <textarea id="postContent" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500" required></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Post</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Posts Feed -->
+            <section>
+                <h2 class="text-2xl font-bold mb-6">Community Feed</h2>
+                <div id="postsFeed" class="space-y-6">
+                    <!-- Posts will be dynamically added here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const userData = JSON.parse(localStorage.getItem('betaUser'));
+        if (!userData) {
+            window.location.href = '../index.html';
+        }
+
+        // Initialize community data
+        let communityData = JSON.parse(localStorage.getItem('communityData')) || {
+            posts: [],
+            totalLikes: 0,
+            activeUsers: 1
+        };
+
+        // Update UI on load
+        updateUI();
+
+        // Handle post form submission
+        document.getElementById('postForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('postTitle').value;
+            const content = document.getElementById('postContent').value;
+            
+            const newPost = {
+                id: Date.now(),
+                title,
+                content,
+                author: userData.name || 'Anonymous',
+                likes: 0,
+                timestamp: new Date().toISOString()
+            };
+            
+            communityData.posts.unshift(newPost);
+            localStorage.setItem('communityData', JSON.stringify(communityData));
+            
+            // Update UI
+            updateUI();
+            
+            // Clear form
+            e.target.reset();
+            
+            // Update challenge progress
+            updateChallengeProgress();
+        });
+
+        function updateUI() {
+            // Update stats
+            document.getElementById('totalPosts').textContent = communityData.posts.length;
+            document.getElementById('totalLikes').textContent = communityData.totalLikes;
+            document.getElementById('activeUsers').textContent = communityData.activeUsers;
+            
+            // Update posts feed
+            const postsFeed = document.getElementById('postsFeed');
+            postsFeed.innerHTML = '';
+            
+            communityData.posts.forEach(post => {
+                const postElement = createPostElement(post);
+                postsFeed.appendChild(postElement);
+            });
+        }
+
+        function createPostElement(post) {
+            const div = document.createElement('div');
+            div.className = 'bg-white rounded-lg shadow-md p-6 post-card';
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-semibold">${post.title}</h3>
+                    <span class="text-sm text-gray-500">${new Date(post.timestamp).toLocaleDateString()}</span>
+                </div>
+                <p class="text-gray-600 mb-4">${post.content}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500">Posted by ${post.author}</span>
+                    <button class="like-button text-red-500 hover:text-red-600" data-post-id="${post.id}">
+                        <span class="likes-count">${post.likes}</span> ❤️
+                    </button>
+                </div>
+            `;
+            
+            // Add like button functionality
+            const likeButton = div.querySelector('.like-button');
+            likeButton.addEventListener('click', () => {
+                post.likes++;
+                communityData.totalLikes++;
+                localStorage.setItem('communityData', JSON.stringify(communityData));
+                updateUI();
+                updateChallengeProgress();
+            });
+            
+            return div;
+        }
+
+        function updateChallengeProgress() {
+            const userProgress = JSON.parse(localStorage.getItem('userProgress')) || {
+                points: 0,
+                level: 1,
+                challenges: {
+                    'complete-profile': { progress: 0, completed: false },
+                    'community-engagement': { progress: 0, completed: false },
+                    'feature-testing': { progress: 0, completed: false }
+                }
+            };
+            
+            // Update community engagement challenge
+            const posts = communityData.posts.filter(post => post.author === (userData.name || 'Anonymous')).length;
+            const likes = communityData.posts.reduce((total, post) => total + post.likes, 0);
+            
+            userProgress.challenges['community-engagement'].progress = Math.min(100, (posts + likes) * 25);
+            
+            if (userProgress.challenges['community-engagement'].progress >= 100) {
+                userProgress.challenges['community-engagement'].completed = true;
+                userProgress.points += 75;
+            }
+            
+            localStorage.setItem('userProgress', JSON.stringify(userProgress));
+        }
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('betaUser');
+            window.location.href = '../index.html';
+        });
+    </script>
+</body>
+</html> 
