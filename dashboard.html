@@ -206,15 +206,20 @@
             window.location.href = 'index.html';
         });
 
-        // Add admin dashboard link if admin
-        if (userData && userData.isAdmin) {
-            const navLinks = document.getElementById('navLinks');
-            const adminLink = document.createElement('a');
-            adminLink.href = 'pages/admin.html';
-            adminLink.className = 'text-gray-600 hover:text-gray-800';
-            adminLink.textContent = 'Admin';
-            navLinks.appendChild(adminLink);
-        }
+        // Add admin dashboard link if admin (ensure this runs after nav is rendered)
+        window.addEventListener('DOMContentLoaded', () => {
+            if (userData && userData.isAdmin) {
+                const navLinks = document.getElementById('navLinks');
+                if (!document.getElementById('adminNavLink')) {
+                    const adminLink = document.createElement('a');
+                    adminLink.href = 'pages/admin.html';
+                    adminLink.className = 'text-gray-600 hover:text-gray-800';
+                    adminLink.textContent = 'Admin';
+                    adminLink.id = 'adminNavLink';
+                    navLinks.appendChild(adminLink);
+                }
+            }
+        });
     </script>
 </body>
 </html> 
