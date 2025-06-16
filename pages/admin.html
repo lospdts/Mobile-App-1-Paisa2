@@ -15,6 +15,13 @@
                 <input type="text" id="challengeTitle" placeholder="Challenge Title" class="w-full px-4 py-2 border rounded-md" required>
                 <input type="text" id="challengeDesc" placeholder="Challenge Description" class="w-full px-4 py-2 border rounded-md" required>
                 <input type="number" id="challengePoints" placeholder="Points" class="w-full px-4 py-2 border rounded-md" required>
+                <select id="challengeImage" class="w-full px-4 py-2 border rounded-md" required>
+                    <option value="">Select image</option>
+                    <option value="Nalgas.JPG">Nalgas.JPG</option>
+                    <option value="SleepyJot.JPG">SleepyJot.JPG</option>
+                    <option value="Jot.JPG">Jot.JPG</option>
+                    <option value="option1.png">option1.png</option>
+                </select>
                 <div id="tasksContainer" class="space-y-2">
                     <input type="text" class="task-input w-full px-4 py-2 border rounded-md" placeholder="Task 1" required>
                 </div>
@@ -62,6 +69,7 @@
                         </div>
                     </div>
                     <div class="mb-2 text-gray-700">${ch.desc}</div>
+                    <div class="mb-2">${ch.image ? `<img src="../assets/${ch.image}" alt="Challenge Image" class="w-32 h-32 object-cover rounded">` : ''}</div>
                     <ul class="list-disc ml-6">
                         ${ch.tasks.map(t => `<li>${t}</li>`).join('')}
                     </ul>
@@ -78,6 +86,7 @@
                     document.getElementById('challengeTitle').value = ch.title;
                     document.getElementById('challengeDesc').value = ch.desc;
                     document.getElementById('challengePoints').value = ch.points;
+                    document.getElementById('challengeImage').value = ch.image || '';
                     const container = document.getElementById('tasksContainer');
                     container.innerHTML = '';
                     ch.tasks.forEach((task, i) => {
@@ -113,15 +122,16 @@
             const title = document.getElementById('challengeTitle').value;
             const desc = document.getElementById('challengeDesc').value;
             const points = parseInt(document.getElementById('challengePoints').value, 10);
+            const image = document.getElementById('challengeImage').value;
             const tasks = Array.from(document.querySelectorAll('.task-input')).map(i => i.value).filter(Boolean);
-            if (!title || !desc || !points || tasks.length === 0) return alert('Fill all fields and at least one task.');
+            if (!title || !desc || !points || !image || tasks.length === 0) return alert('Fill all fields, select an image, and add at least one task.');
             const editingIdx = addChallengeForm.getAttribute('data-editing');
             if (editingIdx !== null) {
                 // Update existing
-                challenges[editingIdx] = { title, desc, points, tasks };
+                challenges[editingIdx] = { title, desc, points, image, tasks };
             } else {
                 // Add new
-                challenges.push({ title, desc, points, tasks });
+                challenges.push({ title, desc, points, image, tasks });
             }
             addChallengeForm.removeAttribute('data-editing');
             saveChallenges();
