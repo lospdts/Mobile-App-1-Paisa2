@@ -5,7 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PaisaStripes - Daily Challenges</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #ef4444;
+            transition: width 0.3s ease-in-out;
+        }
+        .challenge-completed {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <div id="app" class="min-h-screen">
@@ -42,7 +59,7 @@
                         <div class="progress-bar mb-2">
                             <div class="progress-bar-fill" style="width: 0%"></div>
                         </div>
-                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
+                        <button id="challenge1Btn" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
                     </div>
 
                     <!-- Challenge Card 2 -->
@@ -55,7 +72,7 @@
                         <div class="progress-bar mb-2">
                             <div class="progress-bar-fill" style="width: 0%"></div>
                         </div>
-                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
+                        <button id="challenge2Btn" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
                     </div>
 
                     <!-- Challenge Card 3 -->
@@ -68,7 +85,7 @@
                         <div class="progress-bar mb-2">
                             <div class="progress-bar-fill" style="width: 0%"></div>
                         </div>
-                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
+                        <button id="challenge3Btn" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Start Challenge</button>
                     </div>
                 </div>
             </section>
@@ -127,23 +144,20 @@
             }
         };
 
-        // Update UI
-        document.getElementById('totalPoints').textContent = userProgress.points;
-        document.getElementById('userLevel').textContent = userProgress.level;
+        // Update UI on load
+        updateUI();
 
         // Handle challenge buttons
-        document.querySelectorAll('.challenge-card button').forEach(button => {
-            button.addEventListener('click', () => {
-                const challengeId = button.closest('.challenge-card').dataset.challenge;
-                startChallenge(challengeId);
-            });
-        });
+        document.getElementById('challenge1Btn').addEventListener('click', () => startChallenge('complete-profile'));
+        document.getElementById('challenge2Btn').addEventListener('click', () => startChallenge('community-engagement'));
+        document.getElementById('challenge3Btn').addEventListener('click', () => startChallenge('feature-testing'));
 
         function startChallenge(challengeId) {
-            if (!userProgress.challenges[challengeId].completed) {
-                userProgress.challenges[challengeId].progress += 25;
-                if (userProgress.challenges[challengeId].progress >= 100) {
-                    userProgress.challenges[challengeId].completed = true;
+            const challenge = userProgress.challenges[challengeId];
+            if (!challenge.completed) {
+                challenge.progress += 25;
+                if (challenge.progress >= 100) {
+                    challenge.completed = true;
                     userProgress.points += 50;
                     updateLevel();
                 }
@@ -161,15 +175,26 @@
         }
 
         function updateUI() {
+            // Update points and level
             document.getElementById('totalPoints').textContent = userProgress.points;
             document.getElementById('userLevel').textContent = userProgress.level;
             
-            // Update progress bars
+            // Update progress bars and button states
             Object.keys(userProgress.challenges).forEach(challengeId => {
-                const progress = userProgress.challenges[challengeId].progress;
-                const progressBar = document.querySelector(`[data-challenge="${challengeId}"] .progress-bar-fill`);
-                if (progressBar) {
-                    progressBar.style.width = `${progress}%`;
+                const challenge = userProgress.challenges[challengeId];
+                const card = document.querySelector(`[data-challenge="${challengeId}"]`);
+                const progressBar = card.querySelector('.progress-bar-fill');
+                const button = card.querySelector('button');
+                
+                // Update progress bar
+                progressBar.style.width = `${challenge.progress}%`;
+                
+                // Update button state
+                if (challenge.completed) {
+                    button.textContent = 'Completed';
+                    button.classList.add('bg-gray-400');
+                    button.classList.remove('bg-red-500', 'hover:bg-red-600');
+                    card.classList.add('challenge-completed');
                 }
             });
         }
