@@ -125,7 +125,8 @@
                 // Store logged in user
                 localStorage.setItem('betaUser', JSON.stringify({
                     name: user.name,
-                    email: user.email
+                    email: user.email,
+                    isAdmin: user.email === 'admin@yourdomain.com'
                 }));
                 
                 // Initialize user progress if not exists

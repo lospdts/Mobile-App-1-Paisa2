@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Manage Challenges</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen max-w-3xl mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-6 text-center">Admin: Manage Weekly Challenges</h1>
+        <div id="adminContent" class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Add New Challenge</h2>
+            <form id="addChallengeForm" class="mb-8 space-y-4">
+                <input type="text" id="challengeTitle" placeholder="Challenge Title" class="w-full px-4 py-2 border rounded-md" required>
+                <input type="text" id="challengeDesc" placeholder="Challenge Description" class="w-full px-4 py-2 border rounded-md" required>
+                <input type="number" id="challengePoints" placeholder="Points" class="w-full px-4 py-2 border rounded-md" required>
+                <div id="tasksContainer" class="space-y-2">
+                    <input type="text" class="task-input w-full px-4 py-2 border rounded-md" placeholder="Task 1" required>
+                </div>
+                <button type="button" id="addTaskBtn" class="bg-gray-200 px-3 py-1 rounded">+ Add Task</button>
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Add Challenge</button>
+            </form>
+            <h2 class="text-xl font-semibold mb-4">Current Challenges</h2>
+            <div id="challengesList"></div>
+        </div>
+    </div>
+    <script>
+        // Only allow admin
+        const user = JSON.parse(localStorage.getItem('betaUser'));
+        if (!user || !user.isAdmin) {
+            window.location.href = '../index.html';
+        }
+
+        // Load challenges from localStorage
+        let challenges = JSON.parse(localStorage.getItem('adminChallenges')) || [];
+
+        function saveChallenges() {
+            localStorage.setItem('adminChallenges', JSON.stringify(challenges));
+        }
+
+        function renderChallenges() {
+            const list = document.getElementById('challengesList');
+            list.innerHTML = '';
+            challenges.forEach((ch, idx) => {
+                const div = document.createElement('div');
+                div.className = 'mb-4 p-4 border rounded';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <span class="font-bold">${ch.title}</span> <span class="text-sm text-gray-500">(${ch.points} pts)</span>
+                        </div>
+                        <button class="text-red-500 hover:underline" data-del="${idx}">Delete</button>
+                    </div>
+                    <div class="mb-2 text-gray-700">${ch.desc}</div>
+                    <ul class="list-disc ml-6">
+                        ${ch.tasks.map(t => `<li>${t}</li>`).join('')}
+                    </ul>
+                `;
+                // Delete button
+                div.querySelector('[data-del]').onclick = () => {
+                    challenges.splice(idx, 1);
+                    saveChallenges();
+                    renderChallenges();
+                };
+                list.appendChild(div);
+            });
+        }
+
+        renderChallenges();
+
+        // Add new task input
+        document.getElementById('addTaskBtn').onclick = () => {
+            const container = document.getElementById('tasksContainer');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'task-input w-full px-4 py-2 border rounded-md';
+            input.placeholder = `Task ${container.children.length + 1}`;
+            container.appendChild(input);
+        };
+
+        // Add new challenge
+        document.getElementById('addChallengeForm').onsubmit = (e) => {
+            e.preventDefault();
+            const title = document.getElementById('challengeTitle').value;
+            const desc = document.getElementById('challengeDesc').value;
+            const points = parseInt(document.getElementById('challengePoints').value, 10);
+            const tasks = Array.from(document.querySelectorAll('.task-input')).map(i => i.value).filter(Boolean);
+            if (!title || !desc || !points || tasks.length === 0) return alert('Fill all fields and at least one task.');
+            challenges.push({ title, desc, points, tasks });
+            saveChallenges();
+            renderChallenges();
+            e.target.reset();
+            // Reset tasks to one input
+            const container = document.getElementById('tasksContainer');
+            container.innerHTML = '';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'task-input w-full px-4 py-2 border rounded-md';
+            input.placeholder = 'Task 1';
+            container.appendChild(input);
+        };
+    </script>
+</body>
+</html> 
