@@ -3,203 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaisaStripes - Beta</title>
+    <title>PaisaStripes - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        /* Custom Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal.active {
-            display: flex;
-        }
-        .toast {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            padding: 1rem;
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-        .toast.active {
-            display: block;
-        }
-    </style>
 </head>
 <body class="bg-gray-100">
-    <div id="app" class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-lg">
-            <div class="max-w-6xl mx-auto px-4">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <span class="text-2xl font-bold text-red-500">PS</span>
-                        <span class="ml-2 text-xl font-bold text-gray-800">PaisaStripes</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button id="loginBtn" class="text-gray-600 hover:text-gray-800">Login</button>
-                        <button id="signupBtn" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Sign Up</button>
-                    </div>
+    <div id="app" class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+            <div>
+                <div class="flex justify-center">
+                    <span class="text-4xl font-bold text-red-500">PS</span>
                 </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Welcome to PaisaStripes
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Join our beta testing community
+                </p>
             </div>
-        </nav>
 
-        <!-- Main Content -->
-        <main class="max-w-6xl mx-auto px-4 py-8">
-            <!-- Hero Section -->
-            <section class="text-center mb-12">
-                <h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to PaisaStripes Beta</h1>
-                <p class="text-xl text-gray-600">Join our exclusive beta testing program and help shape the future of our app!</p>
-            </section>
-
-            <!-- Features Section -->
-            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                    <h3 class="text-xl font-semibold mb-4">Daily Challenges</h3>
-                    <p class="text-gray-600">Complete daily challenges to earn rewards and level up your profile.</p>
+            <!-- Login Form -->
+            <form id="loginForm" class="mt-8 space-y-6">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="email" class="sr-only">Email address</label>
+                        <input id="email" name="email" type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" placeholder="Password">
+                    </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                    <h3 class="text-xl font-semibold mb-4">Community</h3>
-                    <p class="text-gray-600">Connect with other beta testers and share your experiences.</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                    <h3 class="text-xl font-semibold mb-4">Feedback</h3>
-                    <p class="text-gray-600">Help us improve by providing feedback on features and suggestions.</p>
-                </div>
-            </section>
 
-            <!-- Beta Signup Form -->
-            <section class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-                <h2 class="text-2xl font-bold text-center mb-6">Join Beta Testing</h2>
-                <form id="betaSignupForm" class="space-y-4">
-                    <div>
-                        <label class="block text-gray-700 mb-2" for="name">Full Name</label>
-                        <input type="text" id="name" name="name" class="w-full px-4 py-2 border rounded-md" required>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2" for="email">Email</label>
-                        <input type="email" id="email" name="email" class="w-full px-4 py-2 border rounded-md" required>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2" for="device">Primary Device</label>
-                        <select id="device" name="device" class="w-full px-4 py-2 border rounded-md" required>
-                            <option value="ios">iOS</option>
-                            <option value="android">Android</option>
-                            <option value="web">Web</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 mb-2" for="feedback">What features interest you most?</label>
-                        <textarea id="feedback" name="feedback" class="w-full px-4 py-2 border rounded-md" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Join Beta</button>
-                </form>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-white shadow-lg mt-12">
-            <div class="max-w-6xl mx-auto px-4 py-6">
-                <p class="text-center text-gray-600">© 2024 PaisaStripes. All rights reserved.</p>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-            <h2 class="text-2xl font-bold mb-4">Login</h2>
-            <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-gray-700 mb-2" for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" name="email" class="w-full px-4 py-2 border rounded-md" required>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Sign in
+                    </button>
                 </div>
+
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">
+                        Don't have an account? 
+                        <button type="button" id="showSignupBtn" class="font-medium text-red-500 hover:text-red-600">
+                            Sign up
+                        </button>
+                    </p>
+                </div>
+            </form>
+
+            <!-- Signup Form (Hidden by default) -->
+            <form id="signupForm" class="mt-8 space-y-6 hidden">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="signupName" class="sr-only">Full name</label>
+                        <input id="signupName" name="name" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" placeholder="Full name">
+                    </div>
+                    <div>
+                        <label for="signupEmail" class="sr-only">Email address</label>
+                        <input id="signupEmail" name="email" type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="signupPassword" class="sr-only">Password</label>
+                        <input id="signupPassword" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" placeholder="Password">
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="sr-only">Confirm Password</label>
+                        <input id="confirmPassword" name="confirmPassword" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm" placeholder="Confirm Password">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-gray-700 mb-2" for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" name="password" class="w-full px-4 py-2 border rounded-md" required>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Sign up
+                    </button>
                 </div>
-                <button type="submit" class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600">Login</button>
+
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">
+                        Already have an account? 
+                        <button type="button" id="showLoginBtn" class="font-medium text-red-500 hover:text-red-600">
+                            Sign in
+                        </button>
+                    </p>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
-
     <script>
-        // Check if user is already logged in
-        const userData = JSON.parse(localStorage.getItem('betaUser'));
-        if (userData) {
-            window.location.href = 'dashboard.html';
-        }
-
-        // DOM Elements
-        const loginBtn = document.getElementById('loginBtn');
-        const signupBtn = document.getElementById('signupBtn');
-        const loginModal = document.getElementById('loginModal');
+        // Get form elements
         const loginForm = document.getElementById('loginForm');
-        const betaSignupForm = document.getElementById('betaSignupForm');
-        const toast = document.getElementById('toast');
+        const signupForm = document.getElementById('signupForm');
+        const showSignupBtn = document.getElementById('showSignupBtn');
+        const showLoginBtn = document.getElementById('showLoginBtn');
 
-        // Event Listeners
-        loginBtn.addEventListener('click', () => {
-            loginModal.classList.add('active');
+        // Toggle between login and signup forms
+        showSignupBtn.addEventListener('click', () => {
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
         });
 
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
-                loginModal.classList.remove('active');
+        showLoginBtn.addEventListener('click', () => {
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+
+        // Handle login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Store logged in user
+                localStorage.setItem('betaUser', JSON.stringify({
+                    name: user.name,
+                    email: user.email
+                }));
+                
+                // Initialize user progress if not exists
+                if (!localStorage.getItem('userProgress')) {
+                    localStorage.setItem('userProgress', JSON.stringify({
+                        points: 0,
+                        level: 1,
+                        challenges: {
+                            'complete-profile': { progress: 0, completed: false },
+                            'community-engagement': { progress: 0, completed: false },
+                            'feature-testing': { progress: 0, completed: false }
+                        }
+                    }));
+                }
+                
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Invalid email or password');
             }
         });
 
-        function showToast(message, type = 'success') {
-            toast.textContent = message;
-            toast.className = `toast ${type} active`;
-            setTimeout(() => {
-                toast.classList.remove('active');
-            }, 3000);
-        }
-
-        loginForm.addEventListener('submit', (e) => {
+        // Handle signup
+        signupForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            // For demo purposes, accept any login
-            showToast('Successfully logged in!', 'success');
-            loginModal.classList.remove('active');
-            window.location.href = 'dashboard.html';
-        });
-
-        betaSignupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-
-            // Store data in localStorage
-            localStorage.setItem('betaUser', JSON.stringify(data));
-            showToast('Welcome to the beta program!', 'success');
+            
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            // Get existing users
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Check if email already exists
+            if (users.some(u => u.email === email)) {
+                alert('Email already registered');
+                return;
+            }
+            
+            // Add new user
+            users.push({ name, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Store logged in user
+            localStorage.setItem('betaUser', JSON.stringify({ name, email }));
+            
+            // Initialize user progress
+            localStorage.setItem('userProgress', JSON.stringify({
+                points: 0,
+                level: 1,
+                challenges: {
+                    'complete-profile': { progress: 0, completed: false },
+                    'community-engagement': { progress: 0, completed: false },
+                    'feature-testing': { progress: 0, completed: false }
+                }
+            }));
             
             // Redirect to dashboard
             window.location.href = 'dashboard.html';
-        });
-
-        // Handle signup button click
-        signupBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: document.getElementById('betaSignupForm').offsetTop,
-                behavior: 'smooth'
-            });
         });
     </script>
 </body>
