@@ -9,6 +9,14 @@
 <body class="bg-gray-100">
     <div class="min-h-screen max-w-3xl mx-auto py-8">
         <h1 class="text-3xl font-bold mb-6 text-center">Admin: Manage Weekly Challenges</h1>
+        <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400">
+            <h2 class="text-lg font-bold mb-2">Admin Tools (Debug)</h2>
+            <div class="mb-2">
+                <strong>betaUser:</strong>
+                <pre id="betaUserDebug" class="bg-gray-100 p-2 rounded text-xs"></pre>
+            </div>
+            <button id="forceAdminLinkBtn" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Force Show Admin Link</button>
+        </div>
         <div id="adminContent" class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold mb-4">Add New Challenge</h2>
             <form id="addChallengeForm" class="mb-8 space-y-4">
@@ -189,6 +197,26 @@
                 renderInterests();
             }
             e.target.reset();
+        };
+
+        // Admin Tools Debug Panel
+        function updateBetaUserDebug() {
+            document.getElementById('betaUserDebug').textContent = JSON.stringify(localStorage.getItem('betaUser') ? JSON.parse(localStorage.getItem('betaUser')) : null, null, 2);
+        }
+        updateBetaUserDebug();
+        document.getElementById('forceAdminLinkBtn').onclick = function() {
+            const navLinks = window.parent.document.getElementById('navLinks');
+            if (navLinks && !window.parent.document.getElementById('adminNavLink')) {
+                const adminLink = window.parent.document.createElement('a');
+                adminLink.href = 'pages/admin.html';
+                adminLink.className = 'text-gray-600 hover:text-gray-800';
+                adminLink.textContent = 'Admin';
+                adminLink.id = 'adminNavLink';
+                navLinks.appendChild(adminLink);
+                alert('Admin link injected!');
+            } else {
+                alert('Admin link already present or navLinks not found.');
+            }
         };
     </script>
 </body>
