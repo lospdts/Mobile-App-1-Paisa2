@@ -23,6 +23,12 @@
             </form>
             <h2 class="text-xl font-semibold mb-4">Current Challenges</h2>
             <div id="challengesList"></div>
+            <h2 class="text-xl font-semibold mb-4">Manage Profile Interests</h2>
+            <form id="addInterestForm" class="mb-4 flex space-x-2">
+                <input type="text" id="interestInput" placeholder="Add new interest" class="px-4 py-2 border rounded-md" required>
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Add</button>
+            </form>
+            <ul id="interestsList" class="mb-8"></ul>
         </div>
     </div>
     <script>
@@ -129,6 +135,50 @@
             input.className = 'task-input w-full px-4 py-2 border rounded-md';
             input.placeholder = 'Task 1';
             container.appendChild(input);
+        };
+
+        // Interests management
+        let interests = JSON.parse(localStorage.getItem('adminInterests')) || ['Technology', 'Finance', 'Entrepreneurship'];
+        function saveInterests() {
+            localStorage.setItem('adminInterests', JSON.stringify(interests));
+        }
+        function renderInterests() {
+            const list = document.getElementById('interestsList');
+            list.innerHTML = '';
+            interests.forEach((interest, idx) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center mb-2';
+                li.innerHTML = `
+                    <span class="flex-1">${interest}</span>
+                    <button class="text-blue-500 hover:underline mr-2" data-edit-int="${idx}">Edit</button>
+                    <button class="text-red-500 hover:underline" data-del-int="${idx}">Delete</button>
+                `;
+                li.querySelector('[data-del-int]').onclick = () => {
+                    interests.splice(idx, 1);
+                    saveInterests();
+                    renderInterests();
+                };
+                li.querySelector('[data-edit-int]').onclick = () => {
+                    const newVal = prompt('Edit interest:', interest);
+                    if (newVal && newVal.trim()) {
+                        interests[idx] = newVal.trim();
+                        saveInterests();
+                        renderInterests();
+                    }
+                };
+                list.appendChild(li);
+            });
+        }
+        renderInterests();
+        document.getElementById('addInterestForm').onsubmit = (e) => {
+            e.preventDefault();
+            const val = document.getElementById('interestInput').value.trim();
+            if (val && !interests.includes(val)) {
+                interests.push(val);
+                saveInterests();
+                renderInterests();
+            }
+            e.target.reset();
         };
     </script>
 </body>
