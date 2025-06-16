@@ -48,60 +48,7 @@
             <!-- Weekly Challenges Section -->
             <section class="mb-8">
                 <h1 class="text-3xl font-bold mb-6">Weekly Challenges</h1>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Challenge Card 1 -->
-                    <div class="bg-white rounded-lg shadow-md p-6 challenge-card" data-challenge="complete-profile">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-semibold">Complete Profile</h3>
-                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">50 points</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">Finish all profile tasks to earn points.</p>
-                        <ul class="mb-4">
-                            <li><input type="checkbox" class="task" data-challenge="complete-profile"> Add your full name</li>
-                            <li><input type="checkbox" class="task" data-challenge="complete-profile"> Add your email</li>
-                            <li><input type="checkbox" class="task" data-challenge="complete-profile"> Add your location</li>
-                        </ul>
-                        <div class="progress-bar mb-2">
-                            <div class="progress-bar-fill" style="width: 0%"></div>
-                        </div>
-                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600" disabled>Complete All Tasks</button>
-                    </div>
-
-                    <!-- Challenge Card 2 -->
-                    <div class="bg-white rounded-lg shadow-md p-6 challenge-card" data-challenge="community-engagement">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-semibold">Community Engagement</h3>
-                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">75 points</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">Engage with the community this week.</p>
-                        <ul class="mb-4">
-                            <li><input type="checkbox" class="task" data-challenge="community-engagement"> Post a comment</li>
-                            <li><input type="checkbox" class="task" data-challenge="community-engagement"> Like a post</li>
-                            <li><input type="checkbox" class="task" data-challenge="community-engagement"> Create a new post</li>
-                        </ul>
-                        <div class="progress-bar mb-2">
-                            <div class="progress-bar-fill" style="width: 0%"></div>
-                        </div>
-                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600" disabled>Complete All Tasks</button>
-                    </div>
-
-                    <!-- Challenge Card 3 -->
-                    <div class="bg-white rounded-lg shadow-md p-6 challenge-card" data-challenge="feature-testing">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-semibold">Feature Testing</h3>
-                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">100 points</span>
-                        </div>
-                        <p class="text-gray-600 mb-4">Test new features and provide feedback.</p>
-                        <ul class="mb-4">
-                            <li><input type="checkbox" class="task" data-challenge="feature-testing"> Try a new feature</li>
-                            <li><input type="checkbox" class="task" data-challenge="feature-testing"> Submit feedback</li>
-                        </ul>
-                        <div class="progress-bar mb-2">
-                            <div class="progress-bar-fill" style="width: 0%"></div>
-                        </div>
-                        <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600" disabled>Complete All Tasks</button>
-                    </div>
-                </div>
+                <div id="challengesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </section>
 
             <!-- Rewards Section -->
@@ -147,75 +94,88 @@
             window.location.href = '../index.html';
         }
 
-        // Initialize user progress
-        let userProgress = JSON.parse(localStorage.getItem('userProgress')) || {
+        // Load admin-created challenges
+        const adminChallenges = JSON.parse(localStorage.getItem('adminChallenges')) || [];
+        // Per-user progress storage key
+        const userKey = userData.email.replace(/[^a-zA-Z0-9]/g, '_');
+        let userProgress = JSON.parse(localStorage.getItem('userProgress_' + userKey)) || {
             points: 0,
             level: 1,
-            challenges: {
-                'complete-profile': { progress: 0, completed: false },
-                'community-engagement': { progress: 0, completed: false },
-                'feature-testing': { progress: 0, completed: false }
-            }
+            challenges: {}
         };
 
-        // Update UI on load
-        updateUI();
-
-        // Handle challenge tasks
-        document.querySelectorAll('.challenge-card').forEach(card => {
-            const challengeId = card.getAttribute('data-challenge');
-            const checkboxes = card.querySelectorAll('.task');
-            const progressBar = card.querySelector('.progress-bar-fill');
-            const button = card.querySelector('button');
-
-            // Restore checked state from localStorage
-            let checkedTasks = JSON.parse(localStorage.getItem(`tasks-${challengeId}`)) || [];
-            checkboxes.forEach((cb, idx) => {
-                cb.checked = checkedTasks[idx] || false;
+        // Render challenges
+        function renderChallenges() {
+            const container = document.getElementById('challengesContainer');
+            container.innerHTML = '';
+            adminChallenges.forEach((ch, idx) => {
+                // Per-challenge progress
+                const chKey = 'challenge_' + idx;
+                if (!userProgress.challenges[chKey]) {
+                    userProgress.challenges[chKey] = { progress: 0, completed: false, tasks: Array(ch.tasks.length).fill(false) };
+                }
+                const chProgress = userProgress.challenges[chKey];
+                // Card
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md p-6 challenge-card mb-4';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold">${ch.title}</h3>
+                            <p class="text-gray-600 text-sm">${ch.desc}</p>
+                        </div>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">${ch.points} points</span>
+                    </div>
+                    <ul class="mb-4">
+                        ${ch.tasks.map((task, tIdx) => `
+                            <li><input type="checkbox" class="task" data-chidx="${idx}" data-tidx="${tIdx}"> ${task}</li>
+                        `).join('')}
+                    </ul>
+                    <div class="progress-bar mb-2">
+                        <div class="progress-bar-fill" style="width: ${chProgress.progress}%"></div>
+                    </div>
+                    <button class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600" disabled>${chProgress.completed ? 'Completed' : 'Complete All Tasks'}</button>
+                `;
+                if (chProgress.completed) card.classList.add('challenge-completed');
+                container.appendChild(card);
             });
+            // Set checkbox states and listeners
+            setTaskListeners();
+        }
 
-            // Update progress bar and button
-            updateChallengeCard();
-
-            checkboxes.forEach((cb, idx) => {
+        function setTaskListeners() {
+            document.querySelectorAll('.task').forEach(cb => {
+                const chIdx = cb.getAttribute('data-chidx');
+                const tIdx = cb.getAttribute('data-tidx');
+                const chKey = 'challenge_' + chIdx;
+                // Set checked state
+                cb.checked = userProgress.challenges[chKey].tasks[tIdx];
                 cb.addEventListener('change', () => {
-                    checkedTasks[idx] = cb.checked;
-                    localStorage.setItem(`tasks-${challengeId}`, JSON.stringify(checkedTasks));
-                    updateChallengeCard();
+                    userProgress.challenges[chKey].tasks[tIdx] = cb.checked;
+                    updateChallengeProgress(chIdx);
                 });
             });
+        }
 
-            function updateChallengeCard() {
-                const total = checkboxes.length;
-                const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
-                const percent = Math.round((completed / total) * 100);
-                progressBar.style.width = percent + '%';
-                if (completed === total) {
-                    button.textContent = 'Completed';
-                    button.classList.add('bg-gray-400');
-                    button.classList.remove('bg-red-500', 'hover:bg-red-600');
-                    card.classList.add('challenge-completed');
-                    userProgress.challenges[challengeId].progress = 100;
-                    if (!userProgress.challenges[challengeId].completed) {
-                        userProgress.challenges[challengeId].completed = true;
-                        if (challengeId === 'complete-profile') userProgress.points += 50;
-                        if (challengeId === 'community-engagement') userProgress.points += 75;
-                        if (challengeId === 'feature-testing') userProgress.points += 100;
-                        updateLevel();
-                        localStorage.setItem('userProgress', JSON.stringify(userProgress));
-                        updateUI();
-                    }
-                } else {
-                    button.textContent = 'Complete All Tasks';
-                    button.classList.remove('bg-gray-400');
-                    button.classList.add('bg-red-500', 'hover:bg-red-600');
-                    card.classList.remove('challenge-completed');
-                    userProgress.challenges[challengeId].progress = percent;
-                    userProgress.challenges[challengeId].completed = false;
-                    localStorage.setItem('userProgress', JSON.stringify(userProgress));
-                }
+        function updateChallengeProgress(chIdx) {
+            const ch = adminChallenges[chIdx];
+            const chKey = 'challenge_' + chIdx;
+            const chProgress = userProgress.challenges[chKey];
+            const total = ch.tasks.length;
+            const completed = chProgress.tasks.filter(Boolean).length;
+            const percent = Math.round((completed / total) * 100);
+            chProgress.progress = percent;
+            if (completed === total && !chProgress.completed) {
+                chProgress.completed = true;
+                userProgress.points += ch.points;
+                updateLevel();
+            } else if (completed < total) {
+                chProgress.completed = false;
             }
-        });
+            localStorage.setItem('userProgress_' + userKey, JSON.stringify(userProgress));
+            updateUI();
+            renderChallenges();
+        }
 
         function updateLevel() {
             if (userProgress.points >= 2000) {
@@ -229,6 +189,11 @@
             document.getElementById('totalPoints').textContent = userProgress.points;
             document.getElementById('userLevel').textContent = userProgress.level;
         }
+
+        // Save user progress on load
+        localStorage.setItem('userProgress_' + userKey, JSON.stringify(userProgress));
+        updateUI();
+        renderChallenges();
 
         // Handle logout
         document.getElementById('logoutBtn').addEventListener('click', () => {
